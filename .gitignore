@@ -1,0 +1,13 @@
+node_modules
+# Keep environment variables out of version control
+.env
+
+/generated/prisma
+uploads/
+__pycache__/
+*.pyc
+python-service/venv/
+pii_mbert_final*/
+.agents/
+.claude/
+.windsurf/

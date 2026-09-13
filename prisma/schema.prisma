@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CallStatus {
+  UPLOADED
+  QUEUED
+  TRANSCRIBING
+  TRANSCRIBED
+  ANALYZING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id        Int        @id @default(autoincrement())
+  username  String
+  email     String     @unique
+  password  String
+  createdAt DateTime   @default(now())
+
+  calls     Call[]
+  
+}
+
+model Call {
+  id               Int      @id @default(autoincrement())
+  originalFileName String
+  audioPath        String
+  transcript       String?
+  userId           Int
+  status           CallStatus @default(UPLOADED)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  analysis CallAnalysis?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model CallAnalysis {
+  id         Int      @id @default(autoincrement())
+  summary    String?
+  sentiment  String?
+  keyTopics  Json?
+  pii        Json?
+  callId     Int      @unique
+  createdAt  DateTime @default(now())
+
+  call       Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+}
